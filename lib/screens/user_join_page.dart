@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,11 +8,19 @@ import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:flutter_quizck/widgets/custom_text_field_readonly.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class UserJoinPage extends StatelessWidget {
-  const UserJoinPage({super.key, required this.quizID});
+class UserJoinPage extends StatefulWidget {
+  UserJoinPage({
+    super.key,
+    required this.quizID,
+  });
 
   final int quizID;
 
+  @override
+  State<UserJoinPage> createState() => _UserJoinPageState();
+}
+
+class _UserJoinPageState extends State<UserJoinPage> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController();
@@ -47,17 +56,18 @@ class UserJoinPage extends StatelessWidget {
               TextButton(
                 onPressed: () async {
                   final socket = await Socket.connect('10.0.2.2', 3131);
+
                   Map serverData = {};
                   if (controller.text.isNotEmpty) {
                     socket.writeln(
-                        '{"message":"join.quiz","objectType":"JoinQuizRequest","payload":{"quizId":$quizID,"username":"${controller.text}"}}');
+                        '{"message":"join.quiz","objectType":"JoinQuizRequest","payload":{"quizId":${widget.quizID},"username":"${controller.text}"}}');
 
-                    socket.listen(onDone: () {}, (data) {
-                      serverData = json.decode(utf8.decode(data)) as Map;
-                      debugPrint(serverData.toString());
+                    socket.listen((event) {
+                      serverData = json.decode(utf8.decode(event));
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              UserWaitScreen(socket: socket)));
+                        builder: (context) =>
+                            UserWaitScreen(userCount: serverData["payload"]),
+                      ));
                     });
                   }
                 },

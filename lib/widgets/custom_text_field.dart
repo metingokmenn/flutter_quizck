@@ -1,18 +1,21 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quizck/screens/quiz_create_page.dart';
 import 'package:flutter_quizck/screens/user_join_page.dart';
 import 'package:flutter_quizck/screens/user_wait.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class TextFieldWithIconButton extends StatelessWidget {
-  TextFieldWithIconButton(
-      {super.key,
-      this.labelText,
-      this.hintText,
-      required this.isBold,
-      required this.type,
-      this.readOnly});
+  TextFieldWithIconButton({
+    super.key,
+    this.labelText,
+    this.hintText,
+    required this.isBold,
+    required this.type,
+    this.readOnly,
+  });
 
   String? labelText;
 
@@ -87,6 +90,11 @@ class TextFieldWithIconButton extends StatelessWidget {
                           ));
                         }
                       } else if (type == 'CREATE') {
+                        if (controller.text.isNotEmpty) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  QuizCreatePage(quizName: controller.text)));
+                        }
                       } else {}
                     },
                     icon: const Icon(

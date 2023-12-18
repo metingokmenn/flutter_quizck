@@ -1,9 +1,21 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:flutter_quizck/widgets/custom_text_field.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final StreamController<String> streamController = StreamController<String>();
+  Stream get messagesStream => streamController.stream;
 
   @override
   Widget build(BuildContext context) {
@@ -37,18 +49,21 @@ class HomePage extends StatelessWidget {
                     hintText: '<share_link_received>',
                     type: 'JOIN',
                     isBold: false,
+                    
                   ),
                   TextFieldWithIconButton(
                     labelText: 'CREATE A QUIZ',
                     hintText: '<name_for_quiz>',
                     type: 'CREATE',
                     isBold: false,
+                    
                   ),
                   TextFieldWithIconButton(
                     hintText: 'Start A Solved Quiz',
                     isBold: true,
                     readOnly: true,
                     type: 'START',
+                    
                   ),
                 ],
               ),
