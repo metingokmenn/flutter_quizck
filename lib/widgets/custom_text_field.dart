@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_quizck/screens/user_join_page.dart';
+import 'package:flutter_quizck/screens/user_wait.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class TextFieldWithIconButton extends StatelessWidget {
   TextFieldWithIconButton(
@@ -6,6 +11,7 @@ class TextFieldWithIconButton extends StatelessWidget {
       this.labelText,
       this.hintText,
       required this.isBold,
+      required this.type,
       this.readOnly});
 
   String? labelText;
@@ -15,8 +21,11 @@ class TextFieldWithIconButton extends StatelessWidget {
   bool? readOnly;
 
   bool isBold;
+
+  String? type;
   @override
   Widget build(BuildContext context) {
+    final TextEditingController controller = TextEditingController();
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -27,6 +36,7 @@ class TextFieldWithIconButton extends StatelessWidget {
             labelText ?? '',
           ),
           TextFormField(
+            controller: controller,
             readOnly: readOnly ?? false,
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
@@ -66,7 +76,19 @@ class TextFieldWithIconButton extends StatelessWidget {
                   ),
                 ),
                 child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (type == 'JOIN') {
+                        if (controller.text.isNotEmpty &&
+                            controller.text.length == 4) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => UserJoinPage(
+                              quizID: int.parse(controller.text),
+                            ),
+                          ));
+                        }
+                      } else if (type == 'CREATE') {
+                      } else {}
+                    },
                     icon: const Icon(
                       Icons.arrow_forward,
                     )),

@@ -35,17 +35,20 @@ class HomePage extends StatelessWidget {
                   TextFieldWithIconButton(
                     labelText: 'JOIN TO A QUIZ',
                     hintText: '<share_link_received>',
+                    type: 'JOIN',
                     isBold: false,
                   ),
                   TextFieldWithIconButton(
                     labelText: 'CREATE A QUIZ',
                     hintText: '<name_for_quiz>',
+                    type: 'CREATE',
                     isBold: false,
                   ),
                   TextFieldWithIconButton(
                     hintText: 'Start A Solved Quiz',
                     isBold: true,
                     readOnly: true,
+                    type: 'START',
                   ),
                 ],
               ),

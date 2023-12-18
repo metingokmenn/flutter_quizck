@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quizck/screens/admin_wait.dart';
 import 'package:flutter_quizck/screens/home_page.dart';
-import 'package:flutter_quizck/screens/quiz_end_page.dart';
+import 'package:flutter_quizck/screens/user_join_page.dart';
+import 'package:flutter_quizck/screens/user_wait.dart';
 
 void main() {
   runApp(const MyApp());
