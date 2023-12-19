@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_quizck/screens/admin_wait.dart';
-import 'package:flutter_quizck/screens/home_page.dart';
-import 'package:flutter_quizck/screens/user_join_page.dart';
-import 'package:flutter_quizck/screens/user_wait.dart';
+import 'package:flutter_quizck/data/hive_storage.dart';
+import 'package:flutter_quizck/model/quiz_model.dart';
 
-void main() {
+import 'package:flutter_quizck/screens/home_page.dart';
+
+import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/adapters.dart';
+
+final locator = GetIt.instance;
+
+void setup() {
+  locator.registerSingleton<HiveLocalStorage>(HiveLocalStorage());
+}
+
+Future<void> setupHive() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(QuizAdapter());
+  var quizBox = await Hive.openBox<Quiz>('quizzes');
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await setupHive();
+  setup();
+
   runApp(const MyApp());
 }
 
