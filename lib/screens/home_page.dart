@@ -49,21 +49,18 @@ class _HomePageState extends State<HomePage> {
                     hintText: '<share_link_received>',
                     type: 'JOIN',
                     isBold: false,
-                    
                   ),
                   TextFieldWithIconButton(
                     labelText: 'CREATE A QUIZ',
                     hintText: '<name_for_quiz>',
                     type: 'CREATE',
                     isBold: false,
-                    
                   ),
                   TextFieldWithIconButton(
-                    hintText: 'Start A Solved Quiz',
+                    hintText: 'Start A Saved Quiz',
                     isBold: true,
                     readOnly: true,
                     type: 'START',
-                    
                   ),
                 ],
               ),

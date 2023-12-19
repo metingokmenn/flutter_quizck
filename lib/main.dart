@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quizck/data/hive_storage.dart';
+import 'package:flutter_quizck/model/question_model.dart';
 import 'package:flutter_quizck/model/quiz_model.dart';
 
 import 'package:flutter_quizck/screens/home_page.dart';
@@ -11,12 +14,15 @@ final locator = GetIt.instance;
 
 void setup() {
   locator.registerSingleton<HiveLocalStorage>(HiveLocalStorage());
+  locator.registerSingleton<Future<Socket>>(Socket.connect('10.0.2.2', 3131));
 }
 
 Future<void> setupHive() async {
   await Hive.initFlutter();
   Hive.registerAdapter(QuizAdapter());
+  Hive.registerAdapter(QuestionAdapter());
   var quizBox = await Hive.openBox<Quiz>('quizzes');
+  var userCountBox = await Hive.openBox<int>('quizID');
 }
 
 void main() async {

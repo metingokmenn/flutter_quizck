@@ -1,8 +1,15 @@
 import 'dart:convert';
 
-class Question {
+import 'package:hive/hive.dart';
+part 'question_model.g.dart';
+
+@HiveType(typeId: 2)
+class Question extends HiveObject {
+  @HiveField(0)
   String question;
+  @HiveField(1)
   List<String> options;
+  @HiveField(2)
   int correctAnswerIndex;
 
   Question({
@@ -29,6 +36,6 @@ class Question {
 
   @override
   String toString() {
-    return "$question: $options:  $correctAnswerIndex";
+    return '"question":"$question","options":$options,"correctAnswerIndex":$correctAnswerIndex';
   }
 }

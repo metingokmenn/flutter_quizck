@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_quizck/model/question.dart';
+import 'package:flutter_quizck/data/hive_storage.dart';
+import 'package:flutter_quizck/main.dart';
+import 'package:flutter_quizck/model/question_model.dart';
+import 'package:flutter_quizck/model/quiz_model.dart';
 import 'package:flutter_quizck/screens/home_page.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,6 +19,7 @@ class QuizCreatePage extends StatefulWidget {
 class _QuizCreatePageState extends State<QuizCreatePage> {
   int questionCount = 1;
   int itemCountList = 6;
+  int totalQuestionCount = 3;
 
   final PageController pageController = PageController();
   List<TextEditingController> controllers = [];
@@ -24,6 +28,16 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
 
   List<Question> questionList = [];
   List<String> options = [];
+
+  late HiveLocalStorage _hiveLocalStorage;
+
+  @override
+  void initState() {
+    super.initState();
+    _hiveLocalStorage = locator<HiveLocalStorage>();
+  }
+
+  String buttonText = 'SAVE QUESTION';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,7 +98,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                             style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all(Colors.black)),
-                            onPressed: () {
+                            onPressed: () async {
                               debugPrint(itemCountList.toString());
                               for (int i = 0; i < controllers.length; i++) {
                                 if (controllers[i].text.isNotEmpty) {
@@ -93,31 +107,60 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                               }
                               if (options.isNotEmpty &&
                                   questionController.text.isNotEmpty) {
-                                questionList.add(Question(
-                                    question: questionController.text,
-                                    options: options,
-                                    correctAnswerIndex: 0));
-                                debugPrint(questionList.toString());
-                                setState(() {
-                                  questionCount++;
-                                  for (var element in controllers) {
-                                    element.clear();
-                                  }
-                                  questionController.clear();
-                                  options = [];
-                                });
+                                if (questionCount == totalQuestionCount) {
+                                  setState(() {
+                                    buttonText = 'SAVE QUIZ';
+                                  });
+                                  questionList.add(Question(
+                                      question: questionController.text,
+                                      options: options,
+                                      correctAnswerIndex: 0));
+                                  debugPrint(questionList.toString());
+                                  await _hiveLocalStorage.addQuiz(
+                                      quiz: Quiz(
+                                          questions: questionList,
+                                          quizName: widget.quizName));
+                                  List<Quiz> printList =
+                                      await _hiveLocalStorage.getAllQuizzes();
+                                  debugPrint(
+                                      "Hive quiz:   ${printList.toString()}");
+                                  Fluttertoast.showToast(
+                                      msg: 'Your quiz is successfully created');
+                                  Navigator.of(context).pop();
+                                } else {
+                                  questionList.add(Question(
+                                      question: questionController.text,
+                                      options: options,
+                                      correctAnswerIndex: 0));
+                                  debugPrint(questionList.toString());
+                                  setState(() {
+                                    questionCount++;
+                                    for (var element in controllers) {
+                                      element.clear();
+                                    }
+                                    questionController.clear();
+                                    options = [];
+                                  });
+                                }
                               } else {
                                 Fluttertoast.showToast(
                                     msg:
                                         'Please provide necessary informations.');
                               }
                             },
-                            child: const Text(
-                              'SAVE QUESTION',
-                              style: TextStyle(color: Colors.white),
+                            child: Text(
+                              buttonText,
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           Text('Question $questionCount'),
+                          TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  totalQuestionCount++;
+                                });
+                              },
+                              child: const Text('Add Question +'))
                         ],
                       );
                     }

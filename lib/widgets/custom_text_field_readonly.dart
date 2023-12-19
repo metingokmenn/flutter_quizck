@@ -6,7 +6,9 @@ class TextFieldReadOnly extends StatelessWidget {
       this.hintText,
       this.suffixIcon,
       this.readOnly,
-      this.controller});
+      this.controller,
+      this.onTap,
+      this.fillColor});
 
   String? hintText;
 
@@ -14,17 +16,24 @@ class TextFieldReadOnly extends StatelessWidget {
 
   bool? readOnly;
 
+  void Function()? onTap;
+
   TextEditingController? controller;
+
+  Color? fillColor;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextFormField(
+          onTap: onTap ?? () {},
           controller: controller ?? TextEditingController(),
           textAlign: TextAlign.center,
           readOnly: readOnly ?? true,
           decoration: InputDecoration(
+              filled: true,
+              fillColor: fillColor ?? Colors.white,
               focusedBorder:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
               border:

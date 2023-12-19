@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quizck/main.dart';
 import 'package:flutter_quizck/screens/user_wait.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:flutter_quizck/widgets/custom_text_field_readonly.dart';
@@ -55,8 +56,8 @@ class _UserJoinPageState extends State<UserJoinPage> {
               ),
               TextButton(
                 onPressed: () async {
-                  final socket = await Socket.connect('10.0.2.2', 3131);
-
+                  Socket socket = await Socket.connect('10.0.2.2', 3131);
+                  int questionIndex = 0;
                   Map serverData = {};
                   if (controller.text.isNotEmpty) {
                     socket.writeln(
@@ -64,9 +65,15 @@ class _UserJoinPageState extends State<UserJoinPage> {
 
                     socket.listen((event) {
                       serverData = json.decode(utf8.decode(event));
+                      if (serverData["message"] == "question") {
+                        questionIndex++;
+                      }
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            UserWaitScreen(userCount: serverData["payload"]),
+                        builder: (context) => UserWaitScreen(
+                            serverData: serverData,
+                            questionIndex: questionIndex,
+                            quizID: widget.quizID,
+                            username: controller.text),
                       ));
                     });
                   }
