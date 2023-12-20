@@ -6,6 +6,7 @@ import 'package:flutter_quizck/data/hive_storage.dart';
 import 'package:flutter_quizck/main.dart';
 import 'package:flutter_quizck/model/quiz_model.dart';
 import 'package:flutter_quizck/screens/admin_quiz_page.dart';
+import 'package:flutter_quizck/screens/admin_result_page.dart';
 import 'package:flutter_quizck/screens/home_page.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:flutter_quizck/widgets/custom_text_field_readonly.dart';
@@ -40,6 +41,8 @@ class _AdminWaitScreenState extends State<AdminWaitScreen> {
   @override
   Widget build(BuildContext context) {
     int participantCount = 0;
+
+    int quizID = 0;
 
     if (widget.serverData["message"] == 'participant.count') {
       participantCount = widget.serverData["payload"];
@@ -77,6 +80,7 @@ class _AdminWaitScreenState extends State<AdminWaitScreen> {
                   future: _hiveLocalStorage.getQuizID(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
+                      quizID = snapshot.data!;
                       return TextFieldReadOnly(
                         hintText: snapshot.data.toString(),
                         suffixIcon: const Icon(
@@ -128,14 +132,14 @@ class _AdminWaitScreenState extends State<AdminWaitScreen> {
                   socket.writeln(
                       '{"message":"start.quiz","objectType":"Integer","payload":$quizID}');
 
-                  socket.listen((event) {
-                    Map data = {};
-                    data = json.decode(utf8.decode(event));
-                    debugPrint(data.toString());
-                  });
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          AdminQuizPage(currentQuiz: widget.currentQuiz),),);
+                  debugPrint(widget.serverData.toString());
+                  
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => AdminQuizPage(
+                          currentQuiz: widget.currentQuiz, quizID: quizID),
+                    ),
+                  );
                 },
                 child: const Text('START QUIZ'))
           ],

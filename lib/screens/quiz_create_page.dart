@@ -26,6 +26,8 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
 
   final TextEditingController questionController = TextEditingController();
 
+  final TextEditingController correctAnswerController = TextEditingController();
+
   List<Question> questionList = [];
   List<String> options = [];
 
@@ -70,7 +72,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                       controllers.add(TextEditingController());
                     }
                     String option =
-                        String.fromCharCode('A'.codeUnitAt(0) + index - 1);
+                        String.fromCharCode('A'.codeUnitAt(0) + index - 2);
                     if (index == 0) {
                       return TextFormField(
                         controller: questionController,
@@ -79,6 +81,21 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                             hintText: 'Write your question statement here',
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(24))),
+                      );
+                    }
+                    if (index == 1) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          maxLength: 1,
+                          textAlign: TextAlign.center,
+                          controller: correctAnswerController,
+                          decoration: InputDecoration(
+                              hintText: 'Write correct answer index',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(24))),
+                        ),
                       );
                     }
                     if (index == itemCountList - 1) {
@@ -92,96 +109,103 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                     }
 
                     if (index == itemCountList) {
-                      return Column(
-                        children: [
-                          TextButton(
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.black)),
-                            onPressed: () async {
-                              debugPrint(itemCountList.toString());
-                              for (int i = 0; i < controllers.length; i++) {
-                                if (controllers[i].text.isNotEmpty) {
-                                  options.add(controllers[i].text);
-                                }
-                              }
-                              if (options.isNotEmpty &&
-                                  questionController.text.isNotEmpty) {
-                                if (questionCount == totalQuestionCount) {
-                                  setState(() {
-                                    buttonText = 'SAVE QUIZ';
-                                  });
-                                  questionList.add(Question(
-                                      question: questionController.text,
-                                      options: options,
-                                      correctAnswerIndex: 0));
-                                  debugPrint(questionList.toString());
-                                  await _hiveLocalStorage.addQuiz(
-                                      quiz: Quiz(
-                                          questions: questionList,
-                                          quizName: widget.quizName));
-                                  List<Quiz> printList =
-                                      await _hiveLocalStorage.getAllQuizzes();
-                                  debugPrint(
-                                      "Hive quiz:   ${printList.toString()}");
-                                  Fluttertoast.showToast(
-                                      msg: 'Your quiz is successfully created');
-                                  Navigator.of(context).pop();
-                                } else {
-                                  questionList.add(Question(
-                                      question: questionController.text,
-                                      options: options,
-                                      correctAnswerIndex: 0));
-                                  debugPrint(questionList.toString());
-                                  setState(() {
-                                    questionCount++;
-                                    for (var element in controllers) {
-                                      element.clear();
-                                    }
-                                    questionController.clear();
-                                    options = [];
-                                  });
-                                }
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg:
-                                        'Please provide necessary informations.');
-                              }
-                            },
-                            child: Text(
-                              buttonText,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          Text('Question $questionCount'),
-                          TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  totalQuestionCount++;
-                                });
-                              },
-                              child: const Text('Add Question +'))
-                        ],
-                      );
+                      return controlBottom(context);
                     }
 
-                    return Dismissible(
-                      onDismissed: (direction) {
-                        setState(() {
-                          itemCountList--;
-                        });
-                      },
-                      key: UniqueKey(),
-                      child: TextFormField(
-                        controller: controllers[index],
-                        decoration: InputDecoration(hintText: option),
-                      ),
-                    );
+                    return buildOptions(index, option);
                   }),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Padding buildOptions(int index, String option) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Dismissible(
+        onDismissed: (direction) {
+          setState(() {
+            itemCountList--;
+          });
+        },
+        key: UniqueKey(),
+        child: TextFormField(
+          controller: controllers[index],
+          decoration: InputDecoration(hintText: option),
+        ),
+      ),
+    );
+  }
+
+  Column controlBottom(BuildContext context) {
+    return Column(
+      children: [
+        TextButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.black)),
+          onPressed: () async {
+            debugPrint(itemCountList.toString());
+            for (int i = 0; i < controllers.length; i++) {
+              if (controllers[i].text.isNotEmpty) {
+                options.add(controllers[i].text);
+              }
+            }
+            if (options.isNotEmpty && questionController.text.isNotEmpty) {
+              if (questionCount == totalQuestionCount) {
+                setState(() {
+                  buttonText = 'SAVE QUIZ';
+                });
+                questionList.add(Question(
+                    question: questionController.text,
+                    options: options,
+                    correctAnswerIndex:
+                        int.parse(correctAnswerController.text)));
+                debugPrint(questionList.toString());
+                await _hiveLocalStorage.addQuiz(
+                    quiz: Quiz(
+                        questions: questionList, quizName: widget.quizName));
+                List<Quiz> printList = await _hiveLocalStorage.getAllQuizzes();
+                debugPrint("Hive quiz:   ${printList.toString()}");
+                Fluttertoast.showToast(
+                    msg: 'Your quiz is successfully created');
+                Navigator.of(context).pop();
+              } else {
+                questionList.add(Question(
+                    question: questionController.text,
+                    options: options,
+                    correctAnswerIndex:
+                        int.parse(correctAnswerController.text)));
+                debugPrint(questionList.toString());
+                setState(() {
+                  questionCount++;
+                  for (var element in controllers) {
+                    element.clear();
+                  }
+                  questionController.clear();
+                  options = [];
+                });
+              }
+            } else {
+              Fluttertoast.showToast(
+                  msg: 'Please provide necessary informations.');
+            }
+          },
+          child: Text(
+            buttonText,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+        Text('Question $questionCount'),
+        TextButton(
+            onPressed: () {
+              setState(() {
+                totalQuestionCount++;
+              });
+            },
+            child: const Text('Add Question +'))
+      ],
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quizck/data/hive_storage.dart';
 import 'package:flutter_quizck/main.dart';
 import 'package:flutter_quizck/model/quiz_model.dart';
+import 'package:flutter_quizck/screens/admin_result_page.dart';
 import 'package:flutter_quizck/screens/admin_wait.dart';
 import 'package:flutter_quizck/screens/home_page.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
@@ -24,7 +25,7 @@ class _SavedQuizPageState extends State<SavedQuizPage> {
   void initState() {
     _hiveLocalStorage = locator<HiveLocalStorage>();
     allQuizzesFuture = _hiveLocalStorage.getAllQuizzes();
-    
+
     super.initState();
   }
 
@@ -65,13 +66,26 @@ class _SavedQuizPageState extends State<SavedQuizPage> {
 
                         debugPrint(data[index].toJson());
 
-                        socket.listen(onDone: () async {}, (event) {
+                        socket.listen((event) {
                           serverData = json.decode(utf8.decode(event));
                           debugPrint(serverData.toString());
-
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  AdminWaitScreen(serverData: serverData, currentQuiz:data[index])));
+                          if (serverData['message'] == "stats") {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    AdminResultPage(serverData: serverData)));
+                          }
+                          if (serverData["message"] == "shared.quiz.id") {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => AdminWaitScreen(
+                                    serverData: serverData,
+                                    currentQuiz: data[index])));
+                          }
+                          if (serverData["message"] == "participant.count") {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => AdminWaitScreen(
+                                    serverData: serverData,
+                                    currentQuiz: data[index])));
+                          }
                         });
                       },
                       title: Text(data[index].quizName),
