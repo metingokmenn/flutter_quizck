@@ -60,7 +60,8 @@ class _SavedQuizPageState extends State<SavedQuizPage> {
                     List<Quiz> data = snapshot.data!;
                     return ListTile(
                       onTap: () async {
-                        Socket socket = await Socket.connect('10.0.2.2', 3131);
+                        Socket socket =
+                            await Socket.connect('54.86.210.128', 3131);
                         socket.writeln(
                             '{"message":"create.quiz","objectType":"CreateQuizRequest","payload":${data[index].toJson()}}');
 

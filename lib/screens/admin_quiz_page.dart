@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quizck/model/quiz_model.dart';
-import 'package:flutter_quizck/screens/admin_result_page.dart';
 import 'package:flutter_quizck/screens/home_page.dart';
-import 'package:flutter_quizck/screens/user_wait.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 
 class AdminQuizPage extends StatefulWidget {
@@ -77,7 +74,7 @@ class _AdminQuizPageState extends State<AdminQuizPage> {
                     TextButton(
                         onPressed: () async {
                           Socket socket =
-                              await Socket.connect('10.0.2.2', 3131);
+                              await Socket.connect('54.86.210.128', 3131);
                           if (isLast) {
                             socket.writeln(
                                 '{"message":"end.quiz","objectType":"Integer","payload":${widget.quizID}}');

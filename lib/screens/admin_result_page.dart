@@ -37,7 +37,7 @@ class _AdminResultPageState extends State<AdminResultPage> {
           children: [
             Expanded(
               child: ListView.builder(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   itemCount: widget.serverData["payload"]["scores"].length,
                   itemBuilder: (context, index) {
                     return Padding(

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_quizck/data/hive_storage.dart';
 import 'package:flutter_quizck/main.dart';
 import 'package:flutter_quizck/model/quiz_model.dart';
 import 'package:flutter_quizck/screens/admin_quiz_page.dart';
-import 'package:flutter_quizck/screens/admin_result_page.dart';
 import 'package:flutter_quizck/screens/home_page.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:flutter_quizck/widgets/custom_text_field_readonly.dart';
@@ -127,13 +125,13 @@ class _AdminWaitScreenState extends State<AdminWaitScreen> {
             ),
             TextButton(
                 onPressed: () async {
-                  Socket socket = await Socket.connect('10.0.2.2', 3131);
+                  Socket socket = await Socket.connect('54.86.210.128', 3131);
                   int quizID = await _hiveLocalStorage.getQuizID();
                   socket.writeln(
                       '{"message":"start.quiz","objectType":"Integer","payload":$quizID}');
 
                   debugPrint(widget.serverData.toString());
-                  
+
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => AdminQuizPage(

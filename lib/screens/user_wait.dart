@@ -1,14 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quizck/screens/admin_wait.dart';
 import 'package:flutter_quizck/screens/home_page.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:flutter_quizck/widgets/custom_text_field_readonly.dart';
 
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class UserWaitScreen extends StatefulWidget {
   UserWaitScreen(
@@ -168,7 +164,8 @@ class _UserWaitScreenState extends State<UserWaitScreen> {
                           });
                         }
                         debugPrint(selectedAnswer.toString());
-                        Socket socket = await Socket.connect('10.0.2.2', 3131);
+                        Socket socket =
+                            await Socket.connect('54.86.210.128', 3131);
 
                         socket.writeln(
                             '{"message":"answer.question","objectType":"Answer","payload":{"quizId":${widget.quizID},"username":"${widget.username}","questionIndex":${widget.questionIndex - 1},"optionIndex":$selectedAnswer}}');

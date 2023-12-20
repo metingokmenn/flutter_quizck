@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quizck/widgets/app_icon.dart';
 import 'package:flutter_quizck/widgets/custom_text_field.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
